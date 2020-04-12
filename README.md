@@ -106,7 +106,7 @@ $ python trading/trading_example.py -a buy -p 0.01 -v 1000 -m "LRC-USDT"
 place order success: hash=4963352290219542297406476799052752911203044270145934664174347699420370758697, clientOrderId=SampleOrder1586598415
 ```
 
-###Cancel Order
+### Cancel Order
 
 ```bash
 $ python trading/trading_example.py -a cancel -O SampleOrder1586598415
