@@ -49,13 +49,13 @@ loopring sign message 1,2,3,4,5,6
 signature of '1,2,3,4,5,6' is 13467847531487527001260274356653369902629934602648792938137682849997702052810,17034102387132086143868408284736328722663534859319845015635221999547971712812,15235585622868842803104165188060147849906727947244637197326176093821390010072
 ```
 
-## Trading Sample
+## Trading Example
 
 Trading sample provides sample code to place/cancel order, which involves all loopring specific operations include hash, sign, orderId management, etc. Sample code is written by python, and its main entry is `trading/trading_sample.py`, before running, set `PYTHONPATH`to project's root directory first.
 
 ```bash
-$ python trading/trading_sample.py -h
-usage: trading_sample.py [-h] -a {time,buy,sell,cancel} [-m MARKET] [-p PRICE]
+$ python trading/trading_example.py -h
+usage: trading_example.py [-h] -a {time,buy,sell,cancel} [-m MARKET] [-p PRICE]
                          [-v VOLUME] [-O ORDERID] [-H ORDERHASH]
 
 LoopringRestSample
@@ -95,21 +95,21 @@ loopring_exported_account = {
 ### Check Environment
 
 ```bash
-$ python trading/trading_sample.py -a time
+$ python trading/trading_example.py -a time
 on_query_time: {'resultInfo': {'code': 0, 'message': 'SUCCESS'}, 'data': 1586596797476}
 ```
 
 ### Place Order
 
 ```bash
-$ python trading/trading_sample.py -a buy -p 0.01 -v 1000 -m "LRC-USDT"
+$ python trading/trading_example.py -a buy -p 0.01 -v 1000 -m "LRC-USDT"
 place order success: hash=4963352290219542297406476799052752911203044270145934664174347699420370758697, clientOrderId=SampleOrder1586598415
 ```
 
 ###Cancel Order
 
 ```bash
-$ python trading/trading_sample.py -a cancel -O SampleOrder1586598415
+$ python trading/trading_example.py -a cancel -O SampleOrder1586598415
 cancel_order SampleOrder1586596856
 on_cancel_order {'resultInfo': {'code': 0, 'message': 'SUCCESS'}, 'data': True} {'accountId': 1234, 'clientOrderId': 'SampleOrder1586598415'}
 cancel order success

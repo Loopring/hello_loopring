@@ -16,7 +16,7 @@ loopring_exported_account = {
 }
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="LoopringRestSample")
+    parser = argparse.ArgumentParser(description="Loopring DEX Rest API Trading Example")
     parser.add_argument("-a", "--action", required=True, choices=['time', 'buy', 'sell', 'cancel'], default='time', help='choose action')
     parser.add_argument("-m", "--market", default="LRC-USDT", help='specific token market')
     parser.add_argument("-p", "--price", help='order price')
