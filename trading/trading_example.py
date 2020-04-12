@@ -27,26 +27,26 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     loopring_rest_sample = LoopringRestApiSample()
-    loopring_rest_sample.connect(loopring_exported_account)
-    sleep(5)
-
     if args.action == "time":
-        loopring_rest_sample.query_time()
-    elif args.action == "buy":
-        buy_token, sell_token = args.market.split('-')
-        price =  float(args.price)
-        volume = float(args.volume)
-        loopring_rest_sample.buy(buy_token, sell_token, price, volume)
-    elif args.action == "sell":
-        buy_token, sell_token = args.market.split('-')
-        price =  float(args.price)
-        volume = float(args.volume)
-        loopring_rest_sample.sell(buy_token, sell_token, price, volume)
-    elif args.action == "cancel":
-        cancal_params = {}
-        if args.orderHash:
-            cancal_params['orderHash'] = args.orderHash
-        if args.Orderid:
-            cancal_params['orderid'] = args.Orderid
-        loopring_rest_sample.cancel_order(**cancal_params)
-    sleep(5)
+        srv_time = loopring_rest_sample.query_srv_time()
+        print(f"srv time is {srv_time}")
+    else:
+        loopring_rest_sample.connect(loopring_exported_account)
+        if args.action == "buy":
+            buy_token, sell_token = args.market.split('-')
+            price =  float(args.price)
+            volume = float(args.volume)
+            loopring_rest_sample.buy(buy_token, sell_token, price, volume)
+        elif args.action == "sell":
+            buy_token, sell_token = args.market.split('-')
+            price =  float(args.price)
+            volume = float(args.volume)
+            loopring_rest_sample.sell(buy_token, sell_token, price, volume)
+        elif args.action == "cancel":
+            cancal_params = {}
+            if args.orderHash:
+                cancal_params['orderHash'] = args.orderHash
+            if args.Orderid:
+                cancal_params['orderid'] = args.Orderid
+            loopring_rest_sample.cancel_order(**cancal_params)
+        sleep(5)

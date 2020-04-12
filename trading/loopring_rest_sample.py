@@ -43,7 +43,7 @@ class LoopringRestApiSample(RestClient):
     def __init__(self):
         """"""
         super().__init__()
-
+        # exported account
         self.api_key     = ""
         self.private_key = ""
         self.address     = ""
@@ -51,9 +51,9 @@ class LoopringRestApiSample(RestClient):
         self.publicKeyY  = ""
         self.accountId   = 0
 
+        # order related
         self.orderId     = [None] * 256
         self.time_offset = 0
-
         self.order_sign_param = poseidon_params(SNARK_SCALAR_FIELD, 14, 6, 53, b'poseidon', 5, security_target=128)
 
         self.init(self.LOOPRING_REST_HOST)
@@ -69,8 +69,11 @@ class LoopringRestApiSample(RestClient):
         self.address     = exported_secret['accountAddress']
         self.accountId   = exported_secret['accountId']
 
+        # align srv and local time
+        self.query_time()
         for token_id in [info['tokenId'] for info in self.market_info_map.values()]:
             self.query_orderId(token_id)
+        sleep(5)
 
     def sign(self, request):
         """
@@ -123,6 +126,21 @@ class LoopringRestApiSample(RestClient):
         data = urllib.parse.quote("&".join([f"{k}={str(v)}" for k, v in request.params.items()]), safe='')
         return "&".join([method, url, data])
 
+    def query_srv_time(self):
+        data = {
+            "security": Security.NONE
+        }
+
+        response = self.request(
+            "GET",
+            path="/api/v2/timestamp",
+            data=data
+        )
+        json_resp = response.json()
+        if json_resp['resultInfo']['code'] != 0:
+            raise AttributeError(f"on_query_time failed {data}")
+        return json_resp['data']
+
     def query_time(self):
         """"""
         data = {
@@ -137,7 +155,6 @@ class LoopringRestApiSample(RestClient):
         )
 
     def on_query_time(self, data, request):
-        print(f"on_query_time: {data}")
         if data['resultInfo']['code'] != 0:
             raise AttributeError(f"on_query_time failed {data}")
         local_time = int(time() * 1000)
