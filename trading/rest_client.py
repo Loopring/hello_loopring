@@ -98,7 +98,6 @@ class RestClient(object):
     def init(self, url_base: str, proxy_host: str = "", proxy_port: int = 0):
         """
         Init rest client with url_base which is the API root address.
-        e.g. 'https://www.bitmex.com/api/v1/'
         """
         self.url_base = url_base
 

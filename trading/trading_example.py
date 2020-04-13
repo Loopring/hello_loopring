@@ -21,8 +21,8 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--market", default="LRC-USDT", help='specific token market')
     parser.add_argument("-p", "--price", help='order price')
     parser.add_argument("-v", "--volume", help='order volume')
-    parser.add_argument("-O", "--Orderid", help='cancel order id')
-    parser.add_argument("-H", "--orderHash", help='cancel order hash')
+    parser.add_argument("-O", "--orderid", help='order id to be cancelled')
+    parser.add_argument("-H", "--orderhash", help='order hash to be cancelled')
 
     args = parser.parse_args()
 
@@ -44,9 +44,9 @@ if __name__ == "__main__":
             loopring_rest_sample.sell(buy_token, sell_token, price, volume)
         elif args.action == "cancel":
             cancal_params = {}
-            if args.orderHash:
-                cancal_params['orderHash'] = args.orderHash
-            if args.Orderid:
-                cancal_params['orderid'] = args.Orderid
+            if args.orderhash:
+                cancal_params['orderHash'] = args.orderhash
+            if args.orderid:
+                cancal_params['clientOrderId'] = args.orderid
             loopring_rest_sample.cancel_order(**cancal_params)
         sleep(5)

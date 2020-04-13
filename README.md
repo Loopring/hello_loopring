@@ -71,9 +71,9 @@ optional arguments:
   -v VOLUME, --volume VOLUME
                         order volume
   -O ORDERID, --Orderid ORDERID
-                        cancel order id
+                        order id
   -H ORDERHASH, --orderHash ORDERHASH
-                        cancel order hash
+                        order hash
 ```
 
 The only things users need to do is config their account in trading_sample.py using information exported from [loopring DEX](<https://loopring.io/trade/>), as below:

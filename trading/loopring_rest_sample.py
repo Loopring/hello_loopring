@@ -32,7 +32,7 @@ class LoopringRestApiSample(RestClient):
     """
 
     LOOPRING_REST_HOST   = "https://api.loopring.io"
-    MAX_ORDER_ID = 1,000,000
+    MAX_ORDER_ID = 1_000_000
 
     market_info_map = {
         "ETH"  : {"tokenId":0, "symbol":"ETH",  "decimals":18},
@@ -73,7 +73,7 @@ class LoopringRestApiSample(RestClient):
         self.query_time()
         for token_id in [info['tokenId'] for info in self.market_info_map.values()]:
             self.query_orderId(token_id)
-        sleep(5)
+        sleep(8)
 
     def sign(self, request):
         """
@@ -198,18 +198,23 @@ class LoopringRestApiSample(RestClient):
         """
         self._order(base_token, quote_token, False, price, volume)
 
-    def _order(self, base_token, quota_token, buy, price, volume):
-        contractS = self.market_info_map[base_token]
-        contractB = self.market_info_map[quota_token]
-        amountS = str(int(10 ** contractS['decimals'] * volume))
-        amountB = str(int(10 ** contractB['decimals'] * price * volume))
-        tokenSId = contractS['tokenId']
-        tokenBId = contractB['tokenId']
+    def _order(self, base_token, quote_token, buy, price, volume):
         if buy:
-            tokenSId, tokenBId = tokenBId, tokenSId
-            amountS, amountB = amountB, amountS
+            tokenS = self.market_info_map[quote_token]
+            tokenB = self.market_info_map[base_token]
+            amountS = str(int(10 ** tokenS['decimals'] * price * volume))
+            amountB = str(int(10 ** tokenB['decimals'] * volume))
+        else:
+            tokenS = self.market_info_map[base_token]
+            tokenB = self.market_info_map[quote_token]
+            amountS = str(int(10 ** tokenS['decimals'] * volume))
+            amountB = str(int(10 ** tokenB['decimals'] * price * volume))
+
+        tokenSId = tokenS['tokenId']
+        tokenBId = tokenB['tokenId']
 
         orderId = self.orderId[tokenSId]
+        assert orderId < self.MAX_ORDER_ID
         self.orderId[tokenSId] += 1
 
         # make valid time ahead 1 hour
@@ -291,8 +296,8 @@ class LoopringRestApiSample(RestClient):
 
         if "orderHash" in cancel_params:
             params["orderHash"] = cancel_params["orderHash"]
-        if "orderid" in cancel_params:
-            params["clientOrderId"] = cancel_params["orderid"]
+        if "clientOrderId" in cancel_params:
+            params["clientOrderId"] = cancel_params["clientOrderId"]
 
         print(f"cancel_order {params}")
         self.add_request(

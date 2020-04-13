@@ -10,7 +10,7 @@ import argparse
 MAX_INPUT = 13
 
 def loopring_poseidon_hash(inputs):
-    # prepare params, using looprint order params
+    # prepare params, using loopring order params
     print(f"poseidon_hash {inputs}")
     params = poseidon_params(SNARK_SCALAR_FIELD, MAX_INPUT + 1, 6, 53, b'poseidon', 5, security_target=128)
     hash_value = poseidon(inputs, params)
