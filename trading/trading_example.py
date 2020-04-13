@@ -44,9 +44,9 @@ if __name__ == "__main__":
             loopring_rest_sample.sell(buy_token, sell_token, price, volume)
         elif args.action == "cancel":
             cancal_params = {}
-            if args.orderHash:
+            if args.orderhash:
                 cancal_params['orderHash'] = args.orderhash
-            if args.Orderid:
+            if args.orderid:
                 cancal_params['clientOrderId'] = args.orderid
             loopring_rest_sample.cancel_order(**cancal_params)
         sleep(5)

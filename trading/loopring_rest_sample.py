@@ -32,7 +32,7 @@ class LoopringRestApiSample(RestClient):
     """
 
     LOOPRING_REST_HOST   = "https://api.loopring.io"
-    MAX_ORDER_ID = 1,000,000
+    MAX_ORDER_ID = 1_000_000
 
     market_info_map = {
         "ETH"  : {"tokenId":0, "symbol":"ETH",  "decimals":18},
@@ -73,7 +73,7 @@ class LoopringRestApiSample(RestClient):
         self.query_time()
         for token_id in [info['tokenId'] for info in self.market_info_map.values()]:
             self.query_orderId(token_id)
-        sleep(5)
+        sleep(8)
 
     def sign(self, request):
         """
@@ -296,7 +296,7 @@ class LoopringRestApiSample(RestClient):
 
         if "orderHash" in cancel_params:
             params["orderHash"] = cancel_params["orderHash"]
-        if "orderid" in cancel_params:
+        if "clientOrderId" in cancel_params:
             params["clientOrderId"] = cancel_params["clientOrderId"]
 
         print(f"cancel_order {params}")
