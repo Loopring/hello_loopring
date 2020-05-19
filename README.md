@@ -2,6 +2,11 @@
 
 This repository contains examples of using the Loopring Relayer APIs to interact with Loopring Exchange (https://loopring.io).
 
+## Requirement
+
+1. Before running, set `PYTHONPATH`to project's root directory first, so it refers to local ethsnarks projects.
+2. Run `pip install -r requirements.txt` to install dependencies.
+
 ## Hash and Sign
 
 Hash and Sign provides python sample code to show how loopring hash and sign inputs, as below:
@@ -51,7 +56,7 @@ signature of '1,2,3,4,5,6' is 13467847531487527001260274356653369902629934602648
 
 ## Trading Example
 
-Trading sample provides sample code to place/cancel order, which involves all loopring specific operations include hash, sign, orderId management, etc. Sample code is written by python, and its main entry is `trading/trading_sample.py`, before running, set `PYTHONPATH`to project's root directory first.
+Trading sample provides sample code to place/cancel order, which involves all loopring specific operations include hash, sign, orderId management, etc. Sample code is written by python, and its main entry is `trading/trading_sample.py`.
 
 ```bash
 $ python trading/trading_example.py -h
