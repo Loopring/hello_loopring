@@ -294,10 +294,10 @@ class LoopringRestApiSample(RestClient):
             "accountId": self.accountId,
         }
 
-        if "orderHash" in cancel_params:
-            params["orderHash"] = cancel_params["orderHash"]
         if "clientOrderId" in cancel_params:
             params["clientOrderId"] = cancel_params["clientOrderId"]
+        if "orderHash" in cancel_params:
+            params["orderHash"] = cancel_params["orderHash"]
 
         print(f"cancel_order {params}")
         self.add_request(
