@@ -232,7 +232,7 @@ class LoopringRestApiSample(RestClient):
             "amountB"       : amountB,
             "allOrNone"     : "false",
             "validSince"    : validSince,
-            "validUntil"    : validSince + 30 * 24 * 60 * 60,
+            "validUntil"    : validSince + 60 * 24 * 60 * 60,
             "maxFeeBips"    : 50,
             "label"         : 211,
             "buy"           : "true" if buy else "false",
