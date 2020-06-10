@@ -38,6 +38,7 @@ class LoopringRestApiSample(RestClient):
         "ETH"  : {"tokenId":0, "symbol":"ETH",  "decimals":18},
         "LRC"  : {"tokenId":2, "symbol":"LRC",  "decimals":18},
         "USDT" : {"tokenId":3, "symbol":"USDT", "decimals":6},
+        "DAI"  : {"tokenId":5,"symbol":"DAI","decimals":18}
     }
 
     def __init__(self):
@@ -294,10 +295,10 @@ class LoopringRestApiSample(RestClient):
             "accountId": self.accountId,
         }
 
-        if "orderHash" in cancel_params:
-            params["orderHash"] = cancel_params["orderHash"]
         if "clientOrderId" in cancel_params:
             params["clientOrderId"] = cancel_params["clientOrderId"]
+        if "orderHash" in cancel_params:
+            params["orderHash"] = cancel_params["orderHash"]
 
         print(f"cancel_order {params}")
         self.add_request(
