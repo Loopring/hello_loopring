@@ -51,6 +51,8 @@ class LoopringRestApiSample(RestClient):
         self.publicKeyX  = ""
         self.publicKeyY  = ""
         self.accountId   = 0
+        self.batch_size  = 2
+        assert self.batch_size <= 10
 
         # order related
         self.orderId     = [None] * 256
@@ -80,7 +82,7 @@ class LoopringRestApiSample(RestClient):
         """
         Generate LOOPRING signature.
         """
-        security = request.data["security"]
+        security = request.data.pop("security", Security.NONE)
         if security == Security.NONE:
             if request.method == "POST":
                 request.data = request.params
@@ -99,6 +101,8 @@ class LoopringRestApiSample(RestClient):
             "Accept"       : "application/json",
             "X-API-KEY"    : self.api_key,
         }
+        if request.headers != None:
+            headers.update(request.headers)
 
         if security == Security.SIGNED:
             ordered_data = self._encode_request(request)
@@ -111,7 +115,7 @@ class LoopringRestApiSample(RestClient):
 
         request.path = path
         if request.method != "GET":
-            request.data = request.params
+            request.data = json.dumps(request.data) if len(request.data) != 0 else request.params
             request.params = {}
         else:
             request.data = {}
@@ -200,6 +204,79 @@ class LoopringRestApiSample(RestClient):
         self._order(base_token, quote_token, False, price, volume)
 
     def _order(self, base_token, quote_token, buy, price, volume):
+        order = self._create_order(base_token, quote_token, buy, price, volume)
+        # print(f"create new order {order}")
+        data = {"security": Security.SIGNED}
+        headers = {
+            "Content-Type": "application/json",
+        }
+
+        self.add_request(
+            method="POST",
+            path="/api/v2/order",
+            callback=self.on_send_order,
+            params=order,
+            data=data,
+            extra=order
+        )
+
+    def batch_buy(self, base_token, quote_token, prices, volumes):
+        """
+        Place batch buy order
+        """
+        self.batch_orders(base_token, quote_token, True, prices, volumes)
+
+    def batch_sell(self, base_token, quote_token, prices, volumes):
+        """
+        Place batch sell order
+        """
+        self.batch_orders(base_token, quote_token, False, prices, volumes)
+
+    def batch_orders(self, base_token, quote_token, is_buy, prices, volumes):
+        """
+        Place sell order
+        """
+        assert(len(prices) == len(volumes))
+        i = 0
+        batch_size = self.batch_size
+        while (i + 1)*batch_size <= len(prices):
+            batch_prices = prices[i*batch_size:(i+1)*batch_size]
+            batch_volumes = volumes[i*batch_size:(i+1)*batch_size]
+            self._batch_orders_impl(base_token, quote_token, is_buy, batch_prices, batch_volumes)
+            i += 1
+        #rests
+        batch_prices = prices[i*batch_size:]
+        batch_volumes = volumes[i*batch_size:]
+        self._batch_orders_impl(base_token, quote_token, is_buy, batch_prices, batch_volumes)
+
+    def _batch_orders_impl(self, base_token, quote_token, is_buy, prices: list, volumes: list):
+        """"""
+        assert(len(prices) == len(volumes) and len(volumes) <= self.batch_size)
+        data = {"security": Security.API_KEY}
+        orders = []
+        for p, v in zip(prices, volumes):
+            order = self._create_order(base_token, quote_token, is_buy, p, v)
+            orders.append(order)
+
+        headers = {
+            "Content-Type": "application/json",
+        }
+
+        data.update({
+            "orders" : orders
+        })
+
+        self.add_request(
+            method="POST",
+            path="/api/v2/batchOrders",
+            callback=self.on_send_orders,
+            params={},
+            data=data,
+            headers=headers,
+            extra=orders, # for mapping order_id and hash
+        )
+
+    def _create_order(self, base_token, quote_token, buy, price, volume):
         if buy:
             tokenS = self.market_info_map[quote_token]
             tokenB = self.market_info_map[base_token]
@@ -249,17 +326,7 @@ class LoopringRestApiSample(RestClient):
             "signatureRy" : str(signedMessage.sig.R.y),
             "signatureS"  : str(signedMessage.sig.s)
         })
-
-        # print(f"create new order {order}")
-        data = {"security": Security.SIGNED}
-        self.add_request(
-            method="POST",
-            path="/api/v2/order",
-            callback=self.on_send_order,
-            params=order,
-            data=data,
-            extra=order
-        )
+        return order
 
     def _serialize_order(self, order):
         return [
@@ -281,6 +348,18 @@ class LoopringRestApiSample(RestClient):
     def on_send_order(self, data, request):
         if data['resultInfo']['code'] == 0:
             print(f"place order success: hash={data['data']}, clientOrderId={request.data['clientOrderId']}")
+        else:
+            raise AttributeError(data['resultInfo']['message'])
+        pass
+
+    def on_send_orders(self, data, request):
+        if data['resultInfo']['code'] == 0:
+            responses = data['data']
+            for idx, order_response in enumerate(responses):
+                if "error" not in order_response:
+                    print(f"place order success: hash={order_response['hash']}, clientOrderId={request.extra[idx]['orderId']}")
+                else:
+                    print(f"Single batch order failed: {responses['error']['message']}")
         else:
             raise AttributeError(data['resultInfo']['message'])
         pass
