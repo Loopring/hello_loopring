@@ -312,7 +312,7 @@ class LoopringRestApiSample(RestClient):
             "maxFeeBips"    : 50,
             "label"         : 211,
             "buy"           : "true" if buy else "false",
-            "clientOrderId" : "SampleOrder" + str(int(time()))
+            "clientOrderId" : "SampleOrder" + str(int(time()*1000))
         }
 
         order_message = self._serialize_order(order)
