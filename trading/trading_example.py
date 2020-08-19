@@ -3,24 +3,26 @@ import sys
 from trading.loopring_rest_sample import LoopringRestApiSample
 from time import sleep
 
-loopring_exported_account = {
-    "exchangeName"    : "LoopringDEX: Beta 1",
-    "exchangeAddress" : "0x944644Ea989Ec64c2Ab9eF341D383cEf586A5777",
-    "exchangeId"      : 2,
-    "accountAddress"  : "USER'S account address",
-    "accountId"       : 1234,
-    "apiKey"          : "USER'S api key",
-    "publicKeyX"      : "USER's publicKeyX",
-    "publicKeyY"      : "USER's publicKeyY",
-    "privateKey"      : "USER's privateKey"
+loopring_exported_account =     {
+    "name" : "",
+    "exchangeName": "LoopringDEX: Beta 1",
+    "exchangeAddress": "0x944644Ea989Ec64c2Ab9eF341D383cEf586A5777",
+    "exchangeId": 2,
+    "accountAddress": "",
+    "accountId": 0,
+    "apiKey": "",
+    "publicKeyX": "",
+    "publicKeyY": "",
+    "privateKey": ""
 }
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Loopring DEX Rest API Trading Example")
-    parser.add_argument("-a", "--action", required=True, choices=['time', 'buy', 'sell', 'cancel'], default='time', help='choose action')
+    parser.add_argument("-a", "--action", required=True,
+                        choices=['time', 'buy', 'batch_buy', 'sell', 'batch_sell', 'cancel'], default='time', help='choose action')
     parser.add_argument("-m", "--market", default="LRC-USDT", help='specific token market')
-    parser.add_argument("-p", "--price", help='order price')
-    parser.add_argument("-v", "--volume", help='order volume')
+    parser.add_argument("-p", "--price", help='order price or prices(, splited prices) if batch mode')
+    parser.add_argument("-v", "--volume", help='order volume or volumes(, splited volumes) if batch mode')
     parser.add_argument("-O", "--orderid", help='order id to be cancelled')
     parser.add_argument("-H", "--orderhash", help='order hash to be cancelled')
 
@@ -37,11 +39,21 @@ if __name__ == "__main__":
             price =  float(args.price)
             volume = float(args.volume)
             loopring_rest_sample.buy(buy_token, sell_token, price, volume)
+        if args.action == "batch_buy":
+            buy_token, sell_token = args.market.split('-')
+            prices =  [float(p) for p in args.price.split(',')]
+            volumes = [float(v) for v in args.volume.split(',')]
+            loopring_rest_sample.batch_buy(buy_token, sell_token, prices, volumes)
         elif args.action == "sell":
             buy_token, sell_token = args.market.split('-')
             price =  float(args.price)
             volume = float(args.volume)
             loopring_rest_sample.sell(buy_token, sell_token, price, volume)
+        elif args.action == "batch_sell":
+            buy_token, sell_token = args.market.split('-')
+            prices =  [float(p) for p in args.price.split(',')]
+            volumes = [float(v) for v in args.volume.split(',')]
+            loopring_rest_sample.batch_sell(buy_token, sell_token, prices, volumes)
         elif args.action == "cancel":
             cancal_params = {}
             if args.orderhash:
