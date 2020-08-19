@@ -106,18 +106,29 @@ on_query_time: {'resultInfo': {'code': 0, 'message': 'SUCCESS'}, 'data': 1586596
 
 ### Place Order
 
+Place single order
 ```bash
 $ python trading/trading_example.py -a buy -p 0.01 -v 1000 -m "LRC-USDT"
-place order success: hash=4963352290219542297406476799052752911203044270145934664174347699420370758697, clientOrderId=SampleOrder1586598415
+
+```
+
+Place batch orders
+```bash
+$ python trading/trading_example.py -a batch_buy -p 0.01,0.02 -v 1000,2000 -m "LRC-USDT"
+
 ```
 
 ### Cancel Order
 
+Cancel single order
 ```bash
 $ python trading/trading_example.py -a cancel -O SampleOrder1586598415
-cancel_order SampleOrder1586596856
-on_cancel_order {'resultInfo': {'code': 0, 'message': 'SUCCESS'}, 'data': True} {'accountId': 1234, 'clientOrderId': 'SampleOrder1586598415'}
-cancel order success
+
+```
+
+Batch cancel mode
+```bash
+$ python trading/trading_example.py -a cancel -O SampleOrder1586598415,SampleOrder1586598961
 
 ```
 
