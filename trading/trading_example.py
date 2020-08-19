@@ -60,5 +60,5 @@ if __name__ == "__main__":
                 cancal_params['orderHash'] = args.orderhash
             if args.orderid:
                 cancal_params['clientOrderId'] = args.orderid
-            loopring_rest_sample.cancel_order(**cancal_params)
+            loopring_rest_sample.cancel_orders(**cancal_params)
         sleep(5)

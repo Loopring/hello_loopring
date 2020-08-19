@@ -128,7 +128,7 @@ class LoopringRestApiSample(RestClient):
     def _encode_request(self, request):
         method = request.method
         url = urllib.parse.quote(self.LOOPRING_REST_HOST + request.path, safe='')
-        data = urllib.parse.quote("&".join([f"{k}={str(v)}" for k, v in request.params.items()]), safe='')
+        data = urllib.parse.quote("&".join([f"{k}={urllib.parse.quote(str(v), safe='')}" for k, v in request.params.items()]), safe='')
         return "&".join([method, url, data])
 
     def query_srv_time(self):
@@ -206,7 +206,7 @@ class LoopringRestApiSample(RestClient):
     def _order(self, base_token, quote_token, buy, price, volume):
         order = self._create_order(base_token, quote_token, buy, price, volume)
         # print(f"create new order {order}")
-        data = {"security": Security.SIGNED}
+        data = {"security": Security.API_KEY}
         headers = {
             "Content-Type": "application/json",
         }
@@ -382,17 +382,63 @@ class LoopringRestApiSample(RestClient):
         self.add_request(
             method="DELETE",
             path="/api/v2/orders",
-            callback=self.on_cancel_order,
+            callback=self.on_cancel_orders,
             params=params,
             data=data
         )
 
-    def on_cancel_order(self, data, request):
+    def on_cancel_orders(self, data, request):
         if data['resultInfo']['code'] == 0:
-            print(f"cancel order {request.data} success {data}")
+            print(f"cancel orders {request.data} success {data}")
         else:
             raise AttributeError(data['resultInfo']['message'])
         pass
+
+    def cancel_orders(self, **cancel_params):
+        """"""
+        cancel_by_orderId = False
+        cancel_by_hash = False
+        cancel_reqs = None
+        if "clientOrderId" in cancel_params:
+            cancel_by_orderId = True
+            clientOrderIds = cancel_params["clientOrderId"].split(',')
+            cancel_reqs = clientOrderIds
+        if "orderHash" in cancel_params:
+            cancel_by_hash = True
+            orderHashs = cancel_params["orderHash"].split(',')
+            cancel_reqs = orderHashs
+
+        if cancel_by_orderId and cancel_by_hash:
+            print(f"Cancel by orderId and hash simultaneously is NOT support.")
+            return
+        elif not cancel_by_orderId and not cancel_by_hash:
+            self.cancel_order()
+            return
+
+        i = 0
+        batch_size = self.batch_size
+        while i*batch_size < len(cancel_reqs):
+            data = {
+                "security": Security.SIGNED
+            }
+            params = {
+                "accountId": self.accountId,
+            }
+            if cancel_by_orderId:
+                params["clientOrderId"] = ','.join(cancel_reqs[i*batch_size : (i+1)*batch_size])
+            elif cancel_by_hash:
+                params["orderHash"] = ','.join(cancel_reqs[i*batch_size : (i+1)*batch_size])
+
+            print(params)
+            path = "/api/v2/orders/byHash" if cancel_by_hash else "/api/v2/orders/byClientOrderId"
+            self.add_request(
+                method="DELETE",
+                path=path,
+                callback=self.on_cancel_orders,
+                params=params,
+                data=data
+            )
+            i += 1
 
 
 
