@@ -239,19 +239,18 @@ class LoopringRestApiSample(RestClient):
         assert(len(prices) == len(volumes))
         i = 0
         batch_size = self.batch_size
-        while (i + 1)*batch_size <= len(prices):
-            batch_prices = prices[i*batch_size:(i+1)*batch_size]
-            batch_volumes = volumes[i*batch_size:(i+1)*batch_size]
+        while i*batch_size < len(prices):
+            batch_prices  =  prices[i*batch_size : (i+1)*batch_size]
+            batch_volumes = volumes[i*batch_size : (i+1)*batch_size]
             self._batch_orders_impl(base_token, quote_token, is_buy, batch_prices, batch_volumes)
             i += 1
-        #rests
-        batch_prices = prices[i*batch_size:]
-        batch_volumes = volumes[i*batch_size:]
-        self._batch_orders_impl(base_token, quote_token, is_buy, batch_prices, batch_volumes)
 
     def _batch_orders_impl(self, base_token, quote_token, is_buy, prices: list, volumes: list):
         """"""
         assert(len(prices) == len(volumes) and len(volumes) <= self.batch_size)
+        if len(prices) == 0:
+            return
+
         data = {"security": Security.API_KEY}
         orders = []
         for p, v in zip(prices, volumes):
