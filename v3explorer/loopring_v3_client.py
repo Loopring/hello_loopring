@@ -22,7 +22,6 @@ from ethsnarks.poseidon import poseidon_params, poseidon
 from v3explorer.ecdsa_utils import *
 from v3explorer.eddsa_utils import *
 
-
 LOOPRING_REST_HOST = "http://uat2.loopring.io"
 
 class Security(Flag):
@@ -267,7 +266,7 @@ class LoopringV3AmmSampleClient(RestClient):
 
     def on_query_amm_pools(self, data, request):
         # print(f"on_query_amm_pools get response: {data}")
-        ammPools = data
+        ammPools = data["pools"]
         for pool in ammPools:
             EIP712.init_amm_env(pool['name'], pool['version'], self.chainId, pool['address'])
             tokens = pool['tokens']['pooled']
@@ -425,6 +424,7 @@ class LoopringV3AmmSampleClient(RestClient):
         for balance in data:
             tokenAmount = balance['total']
             frozenAmount = balance['locked']
+            pending = balance.get('pending', {"withdraw":"0","deposit":"0"})
             for token in self.tokenIds.values():
                 if token == balance['tokenId']:
                     token_symbol = self.tokenNames[token]
@@ -642,7 +642,7 @@ class LoopringV3AmmSampleClient(RestClient):
         data.update(req)
 
         message = createOffchainWithdrawalMessage(req)
-        # print(f"transfer message hash = {bytes.hex(message)}")
+        # print(f"withdraw message hash = {bytes.hex(message)}")
         v, r, s = sig_utils.ecsign(message, self.ecdsaKey)
         data['ecdsaAuth'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + "02"
         data['ecdsaSignature'] = data['ecdsaAuth']
@@ -705,7 +705,7 @@ class LoopringV3AmmSampleClient(RestClient):
             },
             "maxFee" : {
                 "tokenId": tokenId,
-                "volume": str(int(amount*0.001*decimalUnit))
+                "volume": str(int(amount*decimalUnit/1000))
             },
             "to": toAddr,
             "onChainDataHash": "0x" + bytes.hex(onchainDataHash),
