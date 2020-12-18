@@ -623,7 +623,7 @@ class LoopringV3AmmSampleClient(RestClient):
             },
             "maxFee" : {
                 "tokenId": tokenId,
-                "volume": str(int(amount*0.03*decimalUnit))
+                "volume": str(int(amount*decimalUnit/1000))
             },
             "storageId": storageId,
             "validUntil": int(time()) + 60 * 60 * 24 * 60 if validUntil is None else validUntil,
