@@ -20,11 +20,6 @@ loopring_exported_account = {
     "eddsaKey": ""
 }
 
-eth_exchange_config = {
-    "provider"  : "https://goerli.infura.io/v3/XXXXX",
-    "testnet"   : "goerli"
-}
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Loopring DEX Rest API 3.6 Trading Example")
     parser.add_argument("-a", "--action", required=True,
