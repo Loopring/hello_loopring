@@ -22,7 +22,7 @@ from ethsnarks.poseidon import poseidon_params, poseidon
 from v3explorer.ecdsa_utils import *
 from v3explorer.eddsa_utils import *
 
-LOOPRING_REST_HOST = "http://uat2.loopring.io"
+LOOPRING_REST_HOST = "https://uat2.loopring.io"
 
 class Security(Flag):
     NONE        = 0
@@ -34,6 +34,13 @@ class SignatureType(Enum):
     ECDSA           = 0
     EDDSA           = 1
     HASH_APPROVED   = 2
+
+class EthSignType(Enum):
+    ILLEGAL     = "00"
+    INVALID     = "01",
+    EIP_712     = "02",
+    ETH_SIGN    = "03",
+
 
 class LoopringV3AmmSampleClient(RestClient):
     """
@@ -131,7 +138,7 @@ class LoopringV3AmmSampleClient(RestClient):
             signature = signer.sign(request)
             headers.update({"X-API-SIG": signature})
         elif security & Security.ECDSA_AUTH:
-            headers.update({"X-API-SIG": request.data["ecdsaAuth"]})
+            headers.update({"X-API-SIG": request.data["X-API-SIG"]})
             pass
 
         request.path = path
@@ -161,9 +168,7 @@ class LoopringV3AmmSampleClient(RestClient):
             data=data
         )
         json_resp = response.json()
-        if json_resp['resultInfo']['code'] != 0:
-            raise AttributeError(f"on_query_time failed {data}")
-        return json_resp['data']
+        return json_resp['timestamp']
 
     def all_amm_pools(self):
         """"""
@@ -478,8 +483,8 @@ class LoopringV3AmmSampleClient(RestClient):
         message = createUpdateAccountMessage(updateAccountReq)
         # print(f"message hash = {bytes.hex(message)}")
         v, r, s = sig_utils.ecsign(message, self.ecdsaKey)
-        data['ecdsaAuth'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + "02"
-        data['ecdsaSignature'] = data['ecdsaAuth']
+        data['X-API-SIG'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.EIP_712
+        data['ecdsaSignature'] = data['X-API-SIG']
         # print(f"data = {data}")
 
         self.add_request(
@@ -514,7 +519,7 @@ class LoopringV3AmmSampleClient(RestClient):
 
         message = createUpdateAccountMessage(updateAccountReq)
         v, r, s = sig_utils.ecsign(message, self.ecdsaKey)
-        data['ecdsaAuth'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + "02"
+        data['X-API-SIG'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.EIP_712
 
         if not approved:
             signer = UpdateAccountEddsaSignHelper(self.eddsaKey)
@@ -564,8 +569,8 @@ class LoopringV3AmmSampleClient(RestClient):
         message = createOriginTransferMessage(req)
         # print(f"transfer message hash = {bytes.hex(message)}")
         v, r, s = sig_utils.ecsign(message, self.ecdsaKey)
-        data['ecdsaAuth'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + "02"
-        data['ecdsaSignature'] = data['ecdsaAuth']
+        data['X-API-SIG'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.EIP_712
+        data['ecdsaSignature'] = data['X-API-SIG']
 
         # print(f"data = {data}")
         self.add_request(
@@ -592,7 +597,7 @@ class LoopringV3AmmSampleClient(RestClient):
         message = createOriginTransferMessage(req)
         # print(f"transfer message hash = {bytes.hex(message)}")
         v, r, s = sig_utils.ecsign(message, self.ecdsaKey)
-        data['ecdsaAuth'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + "02"
+        data['X-API-SIG'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.EIP_712
 
         self.add_request(
             method="POST",
@@ -644,8 +649,8 @@ class LoopringV3AmmSampleClient(RestClient):
         message = createOffchainWithdrawalMessage(req)
         # print(f"withdraw message hash = {bytes.hex(message)}")
         v, r, s = sig_utils.ecsign(message, self.ecdsaKey)
-        data['ecdsaAuth'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + "02"
-        data['ecdsaSignature'] = data['ecdsaAuth']
+        data['X-API-SIG'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.EIP_712
+        data['ecdsaSignature'] = data['X-API-SIG']
 
         self.add_request(
             method="POST",
@@ -671,7 +676,7 @@ class LoopringV3AmmSampleClient(RestClient):
         message = createOffchainWithdrawalMessage(req)
         # print(f"withdraw message hash = {bytes.hex(message)}")
         v, r, s = sig_utils.ecsign(message, self.ecdsaKey)
-        data['ecdsaAuth'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + "02"
+        data['X-API-SIG'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.EIP_712
 
         self.add_request(
             method="POST",
@@ -834,7 +839,7 @@ class LoopringV3AmmSampleClient(RestClient):
         # print(f"join message hash = {bytes.hex(message)}")
         if sigType == SignatureType.ECDSA:
             v, r, s = sig_utils.ecsign(message, self.ecdsaKey)
-            data['ecdsaSignature'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + "02"
+            data['ecdsaSignature'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.EIP_712
         elif sigType == SignatureType.EDDSA:
             signer = MessageHashEddsaSignHelper(self.eddsaKey)
             data['eddsaSignature'] = signer.sign(message)
@@ -894,7 +899,7 @@ class LoopringV3AmmSampleClient(RestClient):
         # print(f"join message hash = {bytes.hex(message)}")
         if sigType == SignatureType.ECDSA:
             v, r, s = sig_utils.ecsign(message, self.ecdsaKey)
-            data['ecdsaSignature'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + "02"
+            data['ecdsaSignature'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.EIP_712
         elif sigType == SignatureType.EDDSA:
             signer = MessageHashEddsaSignHelper(self.eddsaKey)
             data['eddsaSignature'] = signer.sign(message)

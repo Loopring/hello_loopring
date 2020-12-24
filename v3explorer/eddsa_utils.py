@@ -200,3 +200,21 @@ class MessageHashEddsaSignHelper(EddsaSignHelper):
             return int(data, 16) >> 3
         else:
             raise TypeError("Unknown type " + str(type(data)))
+
+class MessageHash2EddsaSignHelper(EddsaSignHelper):
+    def __init__(self, private_key):
+        super(MessageHash2EddsaSignHelper, self).__init__(
+            poseidon_params(SNARK_SCALAR_FIELD, 2, 6, 53, b'poseidon', 5, security_target=128),
+            private_key
+        )
+
+    def hash(self, eip712_hash_bytes):
+        return self.serialize_data(eip712_hash_bytes)
+
+    def serialize_data(self, data):
+        if isinstance(data, bytes):
+            return int(data.hex(), 16)  % SNARK_SCALAR_FIELD
+        elif isinstance(data, str):
+            return int(data, 16)  % SNARK_SCALAR_FIELD
+        else:
+            raise TypeError("Unknown type " + str(type(data)))

@@ -112,7 +112,7 @@ def createOriginTransferMessage(req: dict):
         "storageID"     : req['storageId']
     })
 
-    print(f"transfer type hash = {bytes.hex(transfer.type_hash())}")
+    # print(f"transfer type hash = {bytes.hex(transfer.type_hash())}")
     return EIP712.hash_packed(
         EIP712.exchangeDomain.hash_struct(),
         transfer.hash_struct()
@@ -164,8 +164,8 @@ def createOffchainWithdrawalMessage(req: dict):
         "storageID"     : req['storageId'],
     })
 
-    print(f"extraData hash = {bytes.hex(Web3.keccak(bytes.fromhex(req['extraData'])))}")
-    print(f"withdrawal type hash = {bytes.hex(withdrawal.type_hash())}")
+    # print(f"extraData hash = {bytes.hex(Web3.keccak(bytes.fromhex(req['extraData'])))}")
+    # print(f"withdrawal type hash = {bytes.hex(withdrawal.type_hash())}")
     return EIP712.hash_packed(
         EIP712.exchangeDomain.hash_struct(),
         withdrawal.hash_struct()
@@ -198,7 +198,7 @@ def createAmmPoolJoinMessage(req: dict):
         validUntil      = req['validUntil']
     )
 
-    print(f"PoolJoin type hash = {bytes.hex(join.type_hash())}")
+    # print(f"PoolJoin type hash = {bytes.hex(join.type_hash())}")
     return EIP712.hash_packed(
         EIP712.ammPoolDomains[req['poolAddress']].hash_struct(),
         join.hash_struct()
@@ -234,7 +234,7 @@ def createAmmPoolExitMessage(req: dict):
         validUntil      = req['validUntil']
     )
 
-    print(f"PoolExit type hash = {bytes.hex(exit.type_hash())}")
+    # print(f"PoolExit type hash = {bytes.hex(exit.type_hash())}")
     return EIP712.hash_packed(
         EIP712.ammPoolDomains[req['poolAddress']].hash_struct(),
         exit.hash_struct()
