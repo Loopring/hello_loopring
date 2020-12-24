@@ -133,8 +133,8 @@ if __name__ == "__main__":
                 loopring_rest_sample.get_transfers()
             elif args.queryType == 'trades':
                 loopring_rest_sample.get_trades()
-            elif args.queryType == 'withdraws':
-                loopring_rest_sample.get_withdraws()
+            elif args.queryType == 'withdrawals':
+                loopring_rest_sample.get_withdrawals()
             elif args.queryType in ['join', 'exit', 'amm']:
                 loopring_rest_sample.get_amm_txs()
         sleep(5)

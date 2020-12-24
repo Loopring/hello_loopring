@@ -359,9 +359,9 @@ class LoopringV3AmmSampleClient(RestClient):
             extra = self.accountId
         )
 
-    def get_withdraws(self):
+    def get_withdrawals(self):
         """"""
-        self.get_user_data("withdraws")
+        self.get_user_data("withdrawals")
 
     def get_deposits(self):
         """"""
@@ -403,7 +403,7 @@ class LoopringV3AmmSampleClient(RestClient):
         )
 
     def on_get_apiKey(self, data, request):
-        print(f"on_get_apiKey get response: {data}")
+        # print(f"on_get_apiKey get response: {data}")
         self.api_key = data["apiKey"]
         self.query_balance()
 
