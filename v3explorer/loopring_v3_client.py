@@ -35,12 +35,11 @@ class SignatureType(Enum):
     EDDSA           = 1
     HASH_APPROVED   = 2
 
-class EthSignType(Enum):
+class EthSignType:
     ILLEGAL     = "00"
-    INVALID     = "01",
-    EIP_712     = "02",
-    ETH_SIGN    = "03",
-
+    INVALID     = "01"
+    EIP_712     = "02"
+    ETH_SIGN    = "03"
 
 class LoopringV3AmmSampleClient(RestClient):
     """
