@@ -638,10 +638,10 @@ class LoopringV3AmmSampleClient(RestClient):
         """"""
         print(f"on_transfer get response: {data}")
 
-    def offchainWithdraw_ecdsa(self, to_b, token, amount, minGas, fast=False):
+    def offchainWithdraw_ecdsa(self, to_b, token, amount, minGas):
         """"""
         data = {"security": Security.ECDSA_AUTH}
-        req = self._create_offchain_withdraw_request(to_b, token, amount, minGas, bytes(0), fast)
+        req = self._create_offchain_withdraw_request(to_b, token, amount, minGas, bytes(0))
         # print(f"create new order {order}")
         data.update(req)
 
@@ -661,7 +661,7 @@ class LoopringV3AmmSampleClient(RestClient):
         )
 
     def offchainWithdraw_eddsa(self, to_b, token, amount, minGas,
-                                extraData=bytes(0), fast=False, validUntil=None, storageId=None):
+                                extraData=bytes(0), validUntil=None, storageId=None):
         """"""
         data = {"security": Security.ECDSA_AUTH}
         req = self._create_offchain_withdraw_request(to_b, token, amount, minGas, extraData, validUntil, storageId)

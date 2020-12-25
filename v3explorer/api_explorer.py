@@ -83,7 +83,7 @@ if __name__ == "__main__":
             token = args.token
             to = args.user_to if args.user_to != "" else args.user_to
             amount = Decimal(args.volume)
-            loopring_rest_sample.offchainWithdraw_eddsa(to, token, amount, 0, bytes(0), True)
+            loopring_rest_sample.offchainWithdraw_eddsa(to, token, amount, 0, bytes(0))
         elif args.action == "update":
             privkey = int(args.key, 16)
             pubKey = PoseidonEdDSA.B() * privkey
