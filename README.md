@@ -9,6 +9,8 @@
 
 ## command line usage
 
+All subsequent commands are running in UAT environment, please goto [Loopring UAT](https://loopring-amm.herokuapp.com) for more details
+
 ### setup account
 Set config got from [Loopring UAT Env](https://loopring-amm.herokuapp.com/)
 ```python
@@ -55,8 +57,8 @@ Set config got from [Loopring UAT Env](https://loopring-amm.herokuapp.com/)
 ### swap
 
 ```bash
-    $python v3explorer/api_explorer.py -a swap-buy -m LRC-ETH -p 0.9 -v 100
-    $python v3explorer/api_explorer.py -a swap-sell -m LRC-ETH -p 1.0 -v 100
+    $python v3explorer/api_explorer.py -a swap-buy -m LRC-ETH -n LRCETH-Pool -p 0.9 -v 100
+    $python v3explorer/api_explorer.py -a swap-sell -m LRC-ETH -n LRCETH-Pool -p 1.0 -v 100
 ```
 
 ### report account
@@ -64,10 +66,17 @@ Set config got from [Loopring UAT Env](https://loopring-amm.herokuapp.com/)
     $python v3explorer/api_explorer.py -a report
 ```
 
-### query account logs
+### query account records
 ```bash
     $python v3explorer/api_explorer.py -a query -T transfers
     $python v3explorer/api_explorer.py -a query -T orders
     $python v3explorer/api_explorer.py -a query -T amm
+    ...
+```
+
+### query exchange info
+```bash
+    $python v3explorer/api_explorer.py -a query -T exchange
+    $python v3explorer/api_explorer.py -a query -T pool
     ...
 ```

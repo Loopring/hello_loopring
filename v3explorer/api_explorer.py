@@ -38,6 +38,7 @@ if __name__ == "__main__":
                             ],
                             default='time', help='choose action')
     parser.add_argument("-m", "--market", default="LRC-USDT", help='specific token market')
+    parser.add_argument("-n", "--poolName", default="LRC-USDT", help='specific AMM pool name')
     parser.add_argument("-d", "--direction", default="0", help='direction of swap')
     parser.add_argument("-t", "--token", default="LRC", help='specific token to transfer')
     parser.add_argument("-k", "--key", default="0x4a3d1e098350", help='specific eddsa key tobe updated')
@@ -104,14 +105,14 @@ if __name__ == "__main__":
             loopring_rest_sample.exit_amm_pool(poolName, burn, exitAmounts)
         elif args.action == 'swap-buy':
             buy_token, sell_token = args.market.split('-')
-            poolName = args.market + "-Pool-3"
+            poolName = args.poolName
             poolAddr = loopring_rest_sample.ammPoolNames[poolName]
             price =  float(args.price)
             volume = float(args.volume)
             loopring_rest_sample.send_order(buy_token, sell_token, True, price, volume, poolAddr)
         elif args.action == 'swap-sell':
             buy_token, sell_token = args.market.split('-')
-            poolName = args.market + "-Pool-3"
+            poolName = args.poolName
             poolAddr = loopring_rest_sample.ammPoolNames[poolName]
             price =  float(args.price)
             volume = float(args.volume)
@@ -132,4 +133,8 @@ if __name__ == "__main__":
                 loopring_rest_sample.get_withdrawals()
             elif args.queryType in ['join', 'exit', 'amm']:
                 loopring_rest_sample.get_amm_txs()
+            elif args.queryType == 'pools':
+                loopring_rest_sample.query_info("amm/pools")
+            elif args.queryType == 'markets':
+                loopring_rest_sample.query_info("exchange/info")
         sleep(5)

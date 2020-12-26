@@ -169,7 +169,7 @@ class LoopringV3AmmSampleClient(RestClient):
         json_resp = response.json()
         return json_resp['timestamp']
 
-    def all_amm_pools(self):
+    def query_info(self, restPath):
         """"""
         data = {
             "security": Security.NONE
@@ -181,14 +181,14 @@ class LoopringV3AmmSampleClient(RestClient):
                 "Content-Type" : "application/json",
                 "Accept"       : "application/json",
             },
-            path="/api/v3/amm/pools",
+            path="/api/v3/" + restPath,
             data=data
         )
         json_resp = response.json()
-        self.on_query_amm_pools(json_resp, Request(method="GET", path="amm", params={}, data=data, headers={}))
-        return json_resp['data']
+        print(ujson.dumps(json_resp, indent=4, sort_keys=True))
+        [self.query_amm_pool_balance(pool["address"]) for pool in json_resp["pools"]]
 
-    def query_amm_pool(self, poolAddress):
+    def query_amm_pool_balance(self, poolAddress):
         """"""
         data = {
             "security": Security.NONE
@@ -205,10 +205,8 @@ class LoopringV3AmmSampleClient(RestClient):
             params={"poolAddress": poolAddress[2:]}
         )
         json_resp = response.json()
-        # print(json_resp)
-        return ([int(amount)/1e18 for amount in json_resp['data']['tokenAmounts']],
-                int(json_resp['data']['PoolTokenAmount'])/1e8
-)
+        print(json_resp)
+
     def query_time(self):
         """"""
         data = {
