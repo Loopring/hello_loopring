@@ -288,8 +288,9 @@ class RestClient(object):
         method: str,
         path: str,
         params: dict = None,
-        data: dict = None,
+        data: Union[dict, str, bytes] = None,
         headers: dict = None,
+        timeout: int = 60
     ):
         """
         Add a new request.
@@ -298,6 +299,7 @@ class RestClient(object):
         :param params: dict for query string
         :param data: dict for body
         :param headers: dict for headers
+        :param timeout: request timeout
         :return: requests.Response
         """
         request = Request(
@@ -318,5 +320,6 @@ class RestClient(object):
             params=request.params,
             data=request.data,
             proxies=self.proxies,
+            timeout=timeout
         )
         return response
