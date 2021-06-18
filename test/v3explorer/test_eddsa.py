@@ -2,13 +2,12 @@ import pytest
 import unittest
 from web3 import Web3
 
-from v3explorer.eddsa_utils import *
-from v3explorer.loopring_v3_client import LOOPRING_REST_HOST
-from trading.rest_client import Request
-from ethsnarks.jubjub import Point
-from ethsnarks.eddsa import Signature, SignedMessage
-from v3explorer.loopring_v3_client import LoopringV3AmmSampleClient
+from sdk.loopring_v3_client import LOOPRING_REST_HOST
+from sdk.sig_utils.eddsa_utils import *
+from sdk.ethsnarks.jubjub import Point
+from sdk.ethsnarks.eddsa import Signature, SignedMessage
 from time import time
+from sdk.request_utils.rest_client import Request
 
 class TestEddsaSignHelpers(unittest.TestCase):
 
@@ -29,7 +28,7 @@ class TestEddsaSignHelpers(unittest.TestCase):
         assert signer.verify(data, generatedSig)
 
     def test_url_signer(self):
-        signer = UrlEddsaSignHelper(1, LOOPRING_REST_HOST)
+        signer = UrlEddsaSignHelper("0x1", LOOPRING_REST_HOST)
         url = urllib
         request = Request(
             method="GET",
@@ -57,7 +56,7 @@ class TestEddsaSignHelpers(unittest.TestCase):
             'validUntil': 1700000000,
             'nonce': 3
             }
-        signer = UpdateAccountEddsaSignHelper(1)
+        signer = UpdateAccountEddsaSignHelper("0x1")
         hash = signer.hash(req)
         print(f"hash = {hash}")
 

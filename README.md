@@ -1,82 +1,35 @@
-# Loopring V3 api sample.
+# Hello Loopring
 
-## install
+ Loopring V3 api sample with sdk
+
+## Install
 
 ```bash
     $pip install -r requirements.txt    # install lib dependencies
-    $export PYTHONPATH=${PWD}           # use local ethsnarks
+    $export PYTHONPATH=${PWD}           # use local ethsnarks to avoid conflicts
 ```
 
-## command line usage
+## Directory Contents
 
-All subsequent commands are running in UAT environment, please goto [Loopring UAT](https://loopring-amm.herokuapp.com) for more details
-
-### setup account
-Set config got from [Loopring UAT Env](https://loopring-amm.herokuapp.com/)
-```python
-    loopring_exported_account = {
-        "name" : "DEV Account 1",
-        "exchangeName": "LoopringDEX: V2",
-        "exchange": "",
-        "address": "",
-        "accountId": 1,
-        "apiKey": "",
-        "chainId": 5,
-        "publicKeyX": "",
-        "publicKeyY": "",
-        "ecdsaKey": "",
-        "eddsaKey": ""
-    }
+```she
+.
+├── sdk				: sdk utils, include poseidon hash, both ecdsa/eddsa signing and a workable 									loopringV3 sample client.
+├── test			: ecdsa & eddsa signing tests, as helper to debug signature issues.
+├── tutorials	: hash/signing code example, and a step-by-step tutorial of loopring transfer.
+├── utils			: other utils.
+└── v3explorer: client sample with full DEX functions.
 ```
 
-### update passowrd
+## Getting Started
 
-```bash
-    $python v3explorer/api_explorer.py -a update -k 0x4c388978a9cd17ff7171fb8694fb7618c8bf48e7c800e81277870c6bf12e47b
-```
+Use tutorials to get familiar with how to do sign a request, and how to make a L2 offchain request in Loopring DEX. See [Tutorial README](https://github.com/Loopring/hello_loopring/blob/loopring-v3/tutorials/README.md) for more details
 
-### transfer
+## A Full Function Client 
 
-```bash
-    $python v3explorer/api_explorer.py -a transfer -t LRC -v 100 -u 0xd854872f17c2783ae9d89e7b2a29cd72ec2a74ff
-```
+There is a full fucntion client sample in v3explorer, user can test all L2 requests by that. Refer to [V3explorer README](https://github.com/Loopring/hello_loopring/blob/loopring-v3/v3explorer/README.md) for more details.
 
-### withdraw
+## Contacts
 
-```bash
-    $python v3explorer/api_explorer.py -a withdraw -t LRC -v 5000
-```
+- [exchange@loopring.io](mailto:exchange@loopring.io)
+- [Loopring Discord](https://discord.gg/KkYccYp)
 
-### order
-
-```bash
-    $python v3explorer/api_explorer.py -a sell -m LRC-ETH -p 1 -v 100
-    $python v3explorer/api_explorer.py -a buy -m LRC-ETH -p 0.9 -v 100
-```
-
-### swap
-
-```bash
-    $python v3explorer/api_explorer.py -a swap-buy -m LRC-ETH -n LRCETH-Pool -p 0.9 -v 100
-    $python v3explorer/api_explorer.py -a swap-sell -m LRC-ETH -n LRCETH-Pool -p 1.0 -v 100
-```
-
-### report account
-```bash
-    $python v3explorer/api_explorer.py -a report
-```
-
-### query account records
-```bash
-    $python v3explorer/api_explorer.py -a query -T transfers
-    $python v3explorer/api_explorer.py -a query -T orders
-    $python v3explorer/api_explorer.py -a query -T amm
-    ...
-```
-
-### query exchange info
-```bash
-    $python v3explorer/api_explorer.py -a query -T exchange
-    $python v3explorer/api_explorer.py -a query -T pool
-    ...
-```

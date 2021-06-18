@@ -1,23 +1,24 @@
 import argparse
 from decimal import Decimal
 import sys
-from v3explorer.loopring_v3_client import LoopringV3AmmSampleClient
 from time import sleep
-from ethsnarks.eddsa import PoseidonEdDSA
-from eth_dex_utils.exchange_utils import EthExchangeWrapper
+
+from sdk.ethsnarks.eddsa import PoseidonEdDSA
+from sdk.loopring_v3_client import LoopringV3Client
 
 loopring_exported_account = {
-    "name" : "DEV Account 1",
-    "exchangeName": "LoopringDEX: V2",
-    "exchange": "",
-    "address": "",
-    "accountId": 1,
-    "apiKey": "",
+    "name" : "UAT Account 1",
     "chainId": 5,
+    "exchangeName": "LoopringDEX: V2",
+    "exchangeAddress": "0x2e76EBd1c7c0C8e7c2B875b6d505a260C525d25e",
+    "accountAddress": "",
+    "accountId": 0,
+    "apiKey": "",
     "publicKeyX": "",
     "publicKeyY": "",
-    "ecdsaKey": "",
-    "eddsaKey": ""
+    "privateKey": "",
+    "ecdsaKey"  : "",
+    "whitelisted": False
 }
 
 if __name__ == "__main__":
@@ -52,7 +53,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    loopring_rest_sample = LoopringV3AmmSampleClient()
+    loopring_rest_sample = LoopringV3Client()
     if args.action == "time":
         srv_time = loopring_rest_sample.query_srv_time()
         print(f"srv time is {srv_time}")

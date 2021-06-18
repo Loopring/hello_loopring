@@ -1,14 +1,15 @@
-from ethsnarks.eddsa import PureEdDSA, PoseidonEdDSA
-from ethsnarks.field import FQ, SNARK_SCALAR_FIELD
-from ethsnarks.poseidon import poseidon_params, poseidon
-from ethsnarks.eddsa import Signature, SignedMessage
+from sdk.ethsnarks.eddsa import PureEdDSA, PoseidonEdDSA
+from sdk.ethsnarks.field import FQ, SNARK_SCALAR_FIELD
+from sdk.ethsnarks.poseidon import poseidon_params, poseidon
+from sdk.ethsnarks.eddsa import Signature, SignedMessage
 import urllib
 import hashlib
 
 class EddsaSignHelper:
-    def __init__(self, poseidon_params, private_key):
+    def __init__(self, poseidon_params, private_key = "0x1"):
         self.poseidon_sign_param = poseidon_params
-        self.private_key = private_key
+        self.private_key = FQ(int(private_key, 16))
+        assert self.private_key != FQ.zero()
         # print(f"self.private_key = {self.private_key}")
 
     def hash(self, structure_data):
@@ -18,7 +19,7 @@ class EddsaSignHelper:
 
     def sign(self, structure_data):
         msgHash = self.hash(structure_data)
-        signedMessage = PoseidonEdDSA.sign(msgHash, FQ(int(self.private_key, 16)))
+        signedMessage = PoseidonEdDSA.sign(msgHash, self.private_key)
         return "0x" + "".join([
                         hex(int(signedMessage.sig.R.x))[2:].zfill(64),
                         hex(int(signedMessage.sig.R.y))[2:].zfill(64),

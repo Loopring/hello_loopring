@@ -1,30 +1,36 @@
 import hashlib
 import sys
 
-from ethsnarks.eddsa import PureEdDSA, PoseidonEdDSA
-from ethsnarks.field import FQ, SNARK_SCALAR_FIELD
-from ethsnarks.poseidon import poseidon_params, poseidon
+from sdk.ethsnarks.eddsa import PureEdDSA, PoseidonEdDSA
+from sdk.ethsnarks.field import FQ, SNARK_SCALAR_FIELD
+from sdk.ethsnarks.poseidon import poseidon_params, poseidon
+from sdk.sig_utils.eddsa_utils import *
 import argparse
 
-
 MAX_INPUT = 13
+
+class TutorialEddsaSignHelper(EddsaSignHelper):
+    def __init__(self, private_key="0x1"):
+        super(TutorialEddsaSignHelper, self).__init__(
+            poseidon_params = poseidon_params(SNARK_SCALAR_FIELD, MAX_INPUT + 1, 6, 53, b'poseidon', 5, security_target=128),
+            private_key = private_key
+        )
+
+    def serialize_data(self, inputs):
+        return [int(data) for data in inputs][:MAX_INPUT]
 
 def loopring_poseidon_hash(inputs):
     # prepare params, using loopring order params
     print(f"poseidon_hash {inputs}")
-    params = poseidon_params(SNARK_SCALAR_FIELD, MAX_INPUT + 1, 6, 53, b'poseidon', 5, security_target=128)
-    hash_value = poseidon(inputs, params)
+    hasher = TutorialEddsaSignHelper()
+    hash_value = hasher.hash(inputs)
     return hash_value
 
 def loopring_sign(input_message, private_key):
     print(f"loopring sign message {input_message}")
-    hasher = hashlib.sha256()
-    hasher.update(input_message.encode('utf-8'))
-    msgHash = int(hasher.hexdigest(), 16) % SNARK_SCALAR_FIELD
-    signed = PoseidonEdDSA.sign(msgHash, FQ(int(private_key)))
-    signature = ','.join(str(_) for _ in [signed.sig.R.x, signed.sig.R.y, signed.sig.s])
+    hasher = TutorialEddsaSignHelper(private_key)
+    signature = hasher.sign(inputs)
     return signature
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Loopring Hash and Sign Code Sample")
@@ -35,9 +41,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.action == "sign":
-        inputs = args.inputs
+        inputs = [int(i) for i in args.inputs.split(',')]
         private_key = args.privatekey
-        assert private_key is not None
+        assert private_key is not None and private_key[:2] == '0x'
         sign = loopring_sign(inputs, private_key)
         print(f"signature of '{inputs}' is {sign}")
     elif args.action == "hash":

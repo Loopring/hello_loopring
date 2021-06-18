@@ -3,8 +3,8 @@ from eip712_structs import EIP712Struct, Address, Array, Boolean, Bytes, Int, St
 from eth_abi import encode_single, encode_abi
 from py_eth_sig_utils import utils as sig_utils
 from web3 import Web3
-from ethsnarks.jubjub import Point
-from ethsnarks.field import FQ
+from sdk.ethsnarks.jubjub import Point
+from sdk.ethsnarks.field import FQ
 
 
 class EIP712:
@@ -43,7 +43,7 @@ class EIP712:
 
 # EIP712.init_env()
 
-def createUpdateAccountMessage(req: dict):
+def generateUpdateAccountEIP712Hash(req: dict):
     class AccountUpdate(EIP712Struct):
         owner = Address()
         accountID = Uint(32)
@@ -74,7 +74,7 @@ def createUpdateAccountMessage(req: dict):
         update.hash_struct()
     )
 
-def createOriginTransferMessage(req: dict):
+def generateTransferEIP712Hash(req: dict):
     """
         struct Transfer
         {
@@ -118,7 +118,7 @@ def createOriginTransferMessage(req: dict):
         transfer.hash_struct()
     )
 
-def createOffchainWithdrawalMessage(req: dict):
+def generateOffchainWithdrawalEIP712Hash(req: dict):
     """
         struct Withdrawal
         {
@@ -171,7 +171,7 @@ def createOffchainWithdrawalMessage(req: dict):
         withdrawal.hash_struct()
     )
 
-def createAmmPoolJoinMessage(req: dict):
+def generateAmmPoolJoinEIP712Hash(req: dict):
     """
         struct PoolJoin
         {
@@ -204,7 +204,7 @@ def createAmmPoolJoinMessage(req: dict):
         join.hash_struct()
     )
 
-def createAmmPoolExitMessage(req: dict):
+def generateAmmPoolExitEIP712Hash(req: dict):
     """
         struct PoolExit
         {
@@ -243,20 +243,6 @@ def createAmmPoolExitMessage(req: dict):
 import sys
 
 if __name__ == "__main__":
-    # req = {
-    #     'owner': "0xc0ff3f78529ab90f765406f7234ce0f2b1ed69ee",
-    #     'accountID': 4,
-    #     'feeTokenID': 3,
-    #     'fee': 1234656,
-    #     'publicKey': "0x1",
-    #     'validUntil': 1699555731,
-    #     'nonce': 0
-    # }
-    # hash = createUpdateAccountMessage(req)
-    # print('message hash = 0x'+bytes.hex(hash))
-    # sig = sig_utils.ecsign(Web3.keccak(hash), int("0x4c5496d2745fe9cc2e0aa3e1aad2b66cc792a716decf707ddb3f92bd2d93ad24", 16).to_bytes(32, byteorder='big'))
-    # print(f"sig = {sig}")
-
     EIP712.init_amm_env(name=sys.argv[2],
                 version="1.0.0",
                 chainId=sys.argv[1],

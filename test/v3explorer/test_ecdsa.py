@@ -3,8 +3,7 @@ from py_eth_sig_utils import utils as sig_utils
 from py_eth_sig_utils.signing import v_r_s_to_signature, signature_to_v_r_s
 from web3 import Web3
 
-from v3explorer.ecdsa_utils import *
-from v3explorer.loopring_v3_client import LoopringV3AmmSampleClient
+from sdk.sig_utils.ecdsa_utils import *
 from time import time
 
 class TestApiSigns(unittest.TestCase):
@@ -54,7 +53,7 @@ class TestApiSigns(unittest.TestCase):
             'validUntil': 1700000000,
             'nonce': 1
         }
-        hash = createUpdateAccountMessage(req)
+        hash = generateUpdateAccountEIP712Hash(req)
         # print('createUpdateAccountMessage hash = 0x'+bytes.hex(hash))
         assert('0x'+bytes.hex(hash) == "0x031fac4223887173ca741460e3b1e642d9d73371a64cd42b46212cc159877f03")
 
@@ -80,8 +79,8 @@ class TestApiSigns(unittest.TestCase):
             "storageId": 1,
             "validUntil": 0xfffffff
         }
-        hash = createOriginTransferMessage(req)
-        print('createOriginTransferMessage hash = 0x'+bytes.hex(hash))
+        hash = generateTransferEIP712Hash(req)
+        print('generateTransferEIP712Hash hash = 0x'+bytes.hex(hash))
         assert('0x'+bytes.hex(hash) == "0xcf3965e3eab3a47b1712b9cf8c7caa1af1a55a2e7a61869455ff64c6d9c791d1")
         v, r, s = sig_utils.ecsign(hash, int("1", 16).to_bytes(32, byteorder='big'))
         print(f"sig = {'0x' + bytes.hex(v_r_s_to_signature(v, r, s))}")
@@ -120,8 +119,8 @@ class TestApiSigns(unittest.TestCase):
             "minGas": 300000,
             "extraData": bytes.hex(extraData)
         }
-        hash = createOffchainWithdrawalMessage(req)
-        print('createOffchainWithdrawalMessage hash = 0x'+bytes.hex(hash))
+        hash = generateOffchainWithdrawalEIP712Hash(req)
+        print('generateOffchainWithdrawalEIP712Hash hash = 0x'+bytes.hex(hash))
         assert('0x'+bytes.hex(hash) == "0xfae5a78e3d12d2c8b220ab8ae7bf733120285699c2c4441972986044c02cbb06")
         v, r, s = sig_utils.ecsign(hash, int("1", 16).to_bytes(32, byteorder='big'))
         print(f"sig = {'0x' + bytes.hex(v_r_s_to_signature(v, r, s))}")
@@ -153,8 +152,8 @@ class TestApiSigns(unittest.TestCase):
             'storageIds': [1,1],
             'validUntil': 1700000000
         }
-        hash = createAmmPoolJoinMessage(req)
-        print('createAmmPoolJoinMessage hash = 0x'+bytes.hex(hash))
+        hash = generateAmmPoolJoinEIP712Hash(req)
+        print('generateAmmPoolJoinEIP712Hash hash = 0x'+bytes.hex(hash))
         # assert('0x'+bytes.hex(hash) == "0xbfda6876a7fedf9f6403000d306f41bcc5e8c10330aedb99d4503f866efbc895")
         v, r, s = sig_utils.ecsign(hash, int("0x4c5496d2745fe9cc2e0aa3e1aad2b66cc792a716decf707ddb3f92bd2d93ad24", 16).to_bytes(32, byteorder='big'))
         print(f"sig = {'0x' + bytes.hex(v_r_s_to_signature(v, r, s))}")
@@ -187,8 +186,8 @@ class TestApiSigns(unittest.TestCase):
             'maxFee': "1000000000",
             'validUntil': 1700000000
         }
-        hash = createAmmPoolExitMessage(req)
-        print('createAmmPoolExitMessage hash = 0x'+bytes.hex(hash))
+        hash = generateAmmPoolExitEIP712Hash(req)
+        print('generateAmmPoolExitEIP712Hash hash = 0x'+bytes.hex(hash))
         assert('0x'+bytes.hex(hash) == "0x3a4fbd83181adf60cfdc176e25eddc761e069553eb72de7022d3165b43b08dd4")
         v, r, s = sig_utils.ecsign(hash, int("1", 16).to_bytes(32, byteorder='big'))
         print(f"sig = {'0x' + bytes.hex(v_r_s_to_signature(v, r, s))}")
