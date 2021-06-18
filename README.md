@@ -16,7 +16,6 @@
 ├── sdk				: sdk utils, include poseidon hash, both ecdsa/eddsa signing and a workable 									loopringV3 sample client.
 ├── test			: ecdsa & eddsa signing tests, as helper to debug signature issues.
 ├── tutorials	: hash/signing code example, and a step-by-step tutorial of loopring transfer.
-├── utils			: other utils.
 └── v3explorer: client sample with full DEX functions.
 ```
 
