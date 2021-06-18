@@ -13,7 +13,7 @@
 
 ```she
 .
-├── sdk: sdk utils, include poseidon hash, both ecdsa/eddsa signing and a workable 									loopringV3 sample client.
+├── sdk: sdk utils, include poseidon hash, both ecdsa/eddsa signing and a workable loopringV3 sample client with full Loopring L2 functions.
 ├── test: ecdsa & eddsa signing tests, as helper to debug signature issues.
 ├── tutorials: hash/signing code example, and a step-by-step tutorial of loopring transfer.
 └── v3explorer: client sample with full DEX functions.
@@ -25,7 +25,7 @@ Use tutorials to get familiar with how to do sign a request, and how to make a L
 
 ## A Full Function Client 
 
-There is a full fucntion client sample in v3explorer, user can test all L2 requests by that. Refer to [V3explorer README](https://github.com/Loopring/hello_loopring/tree/loopring-v3/v3explorer) for more details.
+There is a full fucntion client sample in v3explorer, user can test all L2 requests by that. Refer to [V3explorer](https://github.com/Loopring/hello_loopring/tree/loopring-v3/v3explorer) directory for more details.
 
 ## Contacts
 
