@@ -58,8 +58,8 @@ There are 2 extra settings. ecdsaKey is for L1 account ownership authentication,
 ### swap
 
 ```bash
-    $python v3explorer/api_explorer.py -a swap-buy -m LRC-ETH -p 0.9 -v 100
-    $python v3explorer/api_explorer.py -a swap-sell -m LRC-ETH -p 1.0 -v 100
+    $python v3explorer/api_explorer.py -a swap-sell -n LRCETH-Pool -m LRC-ETH -p 1.0 -v 100
+    $python v3explorer/api_explorer.py -a swap-buy -n LRCETH-Pool -m LRC-ETH -p 0.9 -v 100
 ```
 
 ### report account
