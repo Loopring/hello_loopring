@@ -6,6 +6,7 @@ from time import sleep
 from sdk.ethsnarks.eddsa import PoseidonEdDSA
 from sdk.loopring_v3_client import LoopringV3Client
 
+
 loopring_exported_account = {
     "name" : "UAT Account 1",
     "chainId": 5,

@@ -33,7 +33,7 @@ There are 2 extra settings. ecdsaKey is for L1 account ownership authentication,
 ### update passowrd
 
 ```bash
-    $python v3explorer/api_explorer.py -a update -k 0x4c388978a9cd17ff7171fb8694fb7618c8bf48e7c800e81277870c6bf12e47b
+    $python v3explorer/api_explorer.py -a update -k 0x4f047d81732cdb4b6ef00117a57cb9bff167c20bb17e1d375947db4aa561ee9
 ```
 
 ### transfer

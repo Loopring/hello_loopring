@@ -22,13 +22,14 @@ from sdk.ethsnarks.poseidon import poseidon_params, poseidon
 from sdk.sig_utils.ecdsa_utils import *
 from sdk.sig_utils.eddsa_utils import *
 
-LOOPRING_REST_HOST = "https://uat2.loopring.io"
+LOOPRING_REST_HOST = "https://api.uat.loopring.pro"
 
 class Security(Flag):
-    NONE        = 0
-    EDDSA_SIGN  = 1
-    API_KEY     = 2
-    ECDSA_AUTH  = 4
+    NONE            = 0
+    EDDSA_URL_SIGN  = 1
+    API_KEY         = 2
+    ECDSA_EIP_AUTH  = 4
+    ECDSA_URL_SIGN  = 8
 
 class SignatureType(Enum):
     ECDSA           = 0
@@ -72,8 +73,8 @@ class LoopringV3Client(RestClient):
 
         # self.web3 = Web3(Web3.HTTPProvider(eth_addr))
         # order related
-        self.orderId     = [0] * 256
-        self.offchainId     = [0] * 256
+        self.orderId     = [0] * 65536
+        self.offchainId     = [0] * 65536
         self.time_offset = 0
         self.nonce      = 0
 
@@ -144,14 +145,20 @@ class LoopringV3Client(RestClient):
         if request.headers != None:
             headers.update(request.headers)
 
-        if security & Security.EDDSA_SIGN:
+        if security & Security.EDDSA_URL_SIGN:
             signer = UrlEddsaSignHelper(self.eddsaKey, LOOPRING_REST_HOST)
             signature = signer.sign(request)
             headers.update({"X-API-SIG": signature})
-        elif security & Security.ECDSA_AUTH:
+        elif security & Security.ECDSA_EIP_AUTH:
             # headers.update({"X-API-SIG": request.data["X-API-SIG"]})
             assert "X-API-SIG" in headers
             pass
+        elif security & Security.ECDSA_URL_SIGN:
+            signer = UrlEddsaSignHelper(self.eddsaKey, LOOPRING_REST_HOST)
+            message = signer.hash(request)
+            v, r, s = sig_utils.ecsign(message, self.ecdsaKey)
+            ecdsaSig =  "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.EIP_712
+            headers.update({"X-API-SIG": signature})
 
         request.path = path
         if request.method not in ["GET", "DELETE"]:
@@ -400,7 +407,7 @@ class LoopringV3Client(RestClient):
     def get_apiKey(self):
         """"""
         data = {
-            "security": Security.EDDSA_SIGN
+            "security": Security.EDDSA_URL_SIGN
         }
 
         self.add_request(
@@ -414,7 +421,7 @@ class LoopringV3Client(RestClient):
         )
 
     def on_get_apiKey(self, data, request):
-        # print(f"on_get_apiKey get response: {data}")
+        print(f"on_get_apiKey get response: {data}")
         self.api_key = data["apiKey"]
         self.query_balance()
 
@@ -487,7 +494,7 @@ class LoopringV3Client(RestClient):
             'nonce': self.nonce
         }
         updateAccountReq = self._create_update_request(req)
-        data = {"security": Security.ECDSA_AUTH}
+        data = {"security": Security.ECDSA_EIP_AUTH}
         data.update(updateAccountReq)
 
         message = generateUpdateAccountEIP712Hash(updateAccountReq)
@@ -525,12 +532,16 @@ class LoopringV3Client(RestClient):
         }
         updateAccountReq = self._create_update_request(req)
         # print(f"create new order {order}")
-        data = {"security": Security.ECDSA_AUTH}
+        data = {"security": Security.API_KEY}
         data.update(updateAccountReq)
 
-        message = generateUpdateAccountEIP712Hash(updateAccountReq)
-        v, r, s = sig_utils.ecsign(message, self.ecdsaKey)
-        headers = {'X-API-SIG': "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.EIP_712}
+        if not self.whitelisted:
+            data.update({"security": Security.ECDSA_EIP_AUTH})
+            message = generateUpdateAccountEIP712Hash(updateAccountReq)
+            v, r, s = sig_utils.ecsign(message, self.ecdsaKey)
+            headers = {'X-API-SIG': "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.ETH_SIGN}
+        else:
+            headers = {}
 
         if not approved:
             signer = UpdateAccountEddsaSignHelper(self.eddsaKey)
@@ -574,7 +585,7 @@ class LoopringV3Client(RestClient):
         """"""
         req = self._create_transfer_request(to_b, token, amount)
         # print(f"create new order {order}")
-        data = {"security": Security.ECDSA_AUTH}
+        data = {"security": Security.ECDSA_EIP_AUTH}
 
         data.update(req)
 
@@ -626,7 +637,7 @@ class LoopringV3Client(RestClient):
 
         req = self._create_transfer_request(to_b, token, amount, feeToken, feeAmount, validUntil, storageId)
         print(f"create new req {req}")
-        data = {"security": Security.ECDSA_AUTH}
+        data = {"security": Security.API_KEY}
         data.update(req)
 
         signer = OriginTransferEddsaSignHelper(self.eddsaKey)
@@ -639,7 +650,12 @@ class LoopringV3Client(RestClient):
         headers = {}
         if not self.whitelisted:
             # will put into header, need L1 sig verification
+            data.update({"security": Security.ECDSA_EIP_AUTH})
             headers = {'X-API-SIG': "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.EIP_712}
+            data['X-API-SIG'] = "0x" + bytes.hex(v_r_s_to_signature(v, r, s)) + EthSignType.EIP_712
+        else:
+            data.update({"security": Security.API_KEY})
+            headers = {}
 
         self.add_request(
             method="POST",
@@ -687,7 +703,7 @@ class LoopringV3Client(RestClient):
         """"""
         feeToken, feeAmount = self.getOffChainRequestFees(token, OffchainRequestType.OFFCHAIN_WITHDRAWAL)
 
-        data = {"security": Security.ECDSA_AUTH}
+        data = {"security": Security.ECDSA_EIP_AUTH}
         req = self._create_offchain_withdraw_request(to_b, token, amount, feeToken, feeAmount, minGas, bytes(0))
         # print(f"create new order {order}")
         data.update(req)
@@ -714,7 +730,7 @@ class LoopringV3Client(RestClient):
         """"""
         feeToken, feeAmount = self.getOffChainRequestFees(token, OffchainRequestType.OFFCHAIN_WITHDRAWAL.value)
 
-        data = {"security": Security.ECDSA_AUTH}
+        data = {"security": Security.ECDSA_EIP_AUTH}
         req = self._create_offchain_withdraw_request(to_b, token, amount, feeToken, feeAmount, minGas, extraData, validUntil, storageId)
         print(f"create new req {req}")
         data.update(req)
