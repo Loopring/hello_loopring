@@ -79,7 +79,7 @@ class UrlEddsaSignHelper(EddsaSignHelper):
         if method in ["GET", "DELETE"]:
             data = urllib.parse.quote("&".join([f"{k}={urllib.parse.quote(str(v), safe='')}" for k, v in request.params.items()]), safe='')
         elif method in ["POST", "PUT"]:
-            data = urllib.parse.quote(json.dumps(request.data), safe='')
+            data = urllib.parse.quote(json.dumps(request.data, separators=(',', ':')), safe='')
         else:
             raise Exception(f"Unknown request method {method}")
 
