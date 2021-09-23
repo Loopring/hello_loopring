@@ -873,7 +873,7 @@ class LoopringV3Client(RestClient):
     def cancel_order(self, **kwargs):
         """"""
         data = {
-            "security": Security.EDDSA_SIGN
+            "security": Security.EDDSA_URL_SIGN
         }
 
         params = {
