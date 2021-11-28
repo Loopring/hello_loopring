@@ -5,3 +5,4 @@ eip712-structs
 py_eth_sig_utils
 web3
 ujson
+requests

@@ -7,7 +7,6 @@ from queue import Empty, Queue
 from typing import Any, Callable, Optional, Union
 
 import requests
-import time
 
 
 class RequestStatus(Enum):
@@ -50,27 +49,14 @@ class Request(object):
         self.status = RequestStatus.ready
 
     def __str__(self):
-        if self.response is None:
-            status_code = "terminated"
-        else:
-            status_code = self.response.status_code
-
+        status_code = "terminated" if self.response is None else self.response.status_code
+        response = "" if self.response is None else self.response.text
         return (
-            "request : {} {} {} because {}: \n"
-            "headers: {}\n"
-            "params: {}\n"
-            "data: {}\n"
-            "response:"
-            "{}\n".format(
-                self.method,
-                self.path,
-                self.status.name,
-                status_code,
-                self.headers,
-                self.params,
-                self.data,
-                "" if self.response is None else self.response.text,
-            )
+            f"request: {self.method} {self.path} {self.status.name} because {status_code}\n"
+            f"headers: {self.headers}\n"
+            f"params: {self.params}\n"
+            f"data: {self.data}\n"
+            f"response: {response}\n"
         )
 
 
@@ -87,11 +73,11 @@ class RestClient(object):
     def __init__(self):
         """
         """
-        self.url_base = ''  # type: str
-        self._active = False
+        self.url_base: str = ''
+        self._active: bool = False
 
-        self._queue = Queue()
-        self._pool = None  # type: Pool
+        self._queue: Queue = Queue()
+        self._pool: Pool = None
 
         self.proxies = None
 
@@ -105,7 +91,8 @@ class RestClient(object):
             proxy = f"{proxy_host}:{proxy_port}"
             self.proxies = {"http": proxy, "https": proxy}
 
-    def _create_session(self):
+    @staticmethod
+    def _create_session():
         """"""
         return requests.session()
 
@@ -146,7 +133,7 @@ class RestClient(object):
     ):
         """
         Add a new request.
-        :param method: GET, POST, PUT, DELETE, QUERY
+        :param method: http request method, must be in GET, POST, PUT, DELETE, QUERY
         :param path: 
         :param callback: callback function if 2xx status, type: (dict, Request)
         :param params: dict for query string
@@ -157,19 +144,20 @@ class RestClient(object):
         :param extra: Any extra data which can be used when handling callback
         :return: Request
         """
-        request = Request(
-            method,
-            path,
-            params,
-            data,
-            headers,
-            callback,
-            on_failed,
-            on_error,
-            extra,
-        )
-        self._queue.put(request)
-        return request
+        if method in ['GET', 'POST', 'PUT', 'DELETE', 'QUERY']:
+            request = Request(
+                method,
+                path,
+                params,
+                data,
+                headers,
+                callback,
+                on_failed,
+                on_error,
+                extra,
+            )
+            self._queue.put(request)
+            return request
 
     def _run(self):
         try:
@@ -195,7 +183,8 @@ class RestClient(object):
         """
         return request
 
-    def on_failed(self, status_code: int, request: Request):
+    @staticmethod
+    def on_failed(request: Request):
         """
         Default on_failed handler for Non-2xx response.
         """
@@ -216,26 +205,21 @@ class RestClient(object):
         )
         sys.excepthook(exception_type, exception_value, tb)
 
+    @staticmethod
     def exception_detail(
-        self,
         exception_type: type,
         exception_value: Exception,
         tb,
         request: Optional[Request],
     ):
-        text = "[{}]: Unhandled RestClient Error:{}\n".format(
-            datetime.now().isoformat(), exception_type
-        )
-        text += "request:{}\n".format(request)
-        text += "Exception trace: \n"
-        text += "".join(
-            traceback.format_exception(exception_type, exception_value, tb)
-        )
+        exc_trace = ''.join(traceback.format_exception(exception_type, exception_value, tb))
+
+        text = f"[{datetime.now().isoformat()}]: Unhandled RestClient Error: {exception_type}\n"
+        text += f"request: {request}\n"
+        text += f"Exception trace: {exc_trace}\n"
         return text
 
-    def _process_request(
-        self, request: Request, session: requests.Session
-    ):
+    def _process_request(self, request: Request, session: requests.Session):
         """
         Sending request to server and get result.
         """
@@ -253,35 +237,23 @@ class RestClient(object):
             request.response = response
             status_code = response.status_code
             if status_code // 100 == 2:  # 2xx codes are all successful
-                if status_code == 204:
-                    json_body = None
-                else:
-                    json_body = response.json()
-
+                json_body = None if status_code == 204 else response.json()
                 request.callback(json_body, request)
                 request.status = RequestStatus.success
             else:
                 request.status = RequestStatus.failed
-
-                if request.on_failed:
-                    request.on_failed(status_code, request)
-                else:
-                    self.on_failed(status_code, request)
+                request.on_failed(status_code, request) if request.on_failed else self.on_failed(request)
         except Exception:
             request.status = RequestStatus.error
             t, v, tb = sys.exc_info()
-            if request.on_error:
-                request.on_error(t, v, tb, request)
-            else:
-                self.on_error(t, v, tb, request)
+            request.on_error(t, v, tb, request) if request.on_error else self.on_error(t, v, tb, request)
 
     def make_full_url(self, path: str):
         """
         Make relative api path into full url.
         eg: make_full_url('/get') == 'http://xxxxx/get'
         """
-        url = self.url_base + path
-        return url
+        return self.url_base + path
 
     def request(
         self,
@@ -289,7 +261,7 @@ class RestClient(object):
         path: str,
         params: dict = None,
         data: dict = None,
-        headers: dict = None,
+        headers: dict = None
     ):
         """
         Add a new request.
