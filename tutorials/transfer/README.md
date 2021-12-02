@@ -83,7 +83,7 @@ response = requests.request(
 
 1. Make a transfer request
 
-   Before make transfer, user needs to get storageId of the token to be transferred, which is just like the nonce in ETH tx.
+   Before making a transfer, the user needs to get storageId of the token to be transferred, which is just like the nonce in ETH tx.
 
    ```python
    import requests
@@ -188,7 +188,7 @@ response = requests.request(
    transferReq.update({{"eddsaSignature": signedMessage}})
    ```
 
-   Common users need extra L1 ecdsa authentication in request header to show their ownership of the address, so an extra signature based on L1 EIP712 is required. But this is not necessary for those professional users registerred to Loopring.
+   Common users need extra L1 ecdsa authentication in request header to show their ownership of the address, so an extra signature based on L1 EIP712 is required. But this is not necessary for those professional users registered to Loopring.
 
    ```python
    headers={
