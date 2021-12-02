@@ -28,7 +28,7 @@ Set config got from [Loopring UAT Env](https://loopring-amm.herokuapp.com/), the
       "whitelisted": False
     }
 ```
-There are 2 extra settings. ecdsaKey is for L1 account ownership authentication, directly move L2 token operations like transfer & withdraw need extra L1 signatures. However, if you are a professional user, you can register to Loopring's whitelist to skip this step, which makes transfer especially payment convenient & fast.
+There are 2 extra settings. ecdsaKey is for L1 account ownership authentication, directly moving L2 token operations like transfer & withdraw, need extra L1 signatures. However, if you are a professional user, you can register to Loopring's whitelist to skip this step, which makes transfers, especially payments, convenient & fast.
 
 ### update passowrd
 
