@@ -110,7 +110,7 @@ class LoopringV3Client(RestClient):
         self.query_time()
         self.query_market_config()
         self.get_account()
-        self.get_apiKey()
+        # self.get_apiKey()
 
         EIP712.init_env(name="Loopring Protocol",
                         version="3.6.0",

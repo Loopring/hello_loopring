@@ -11,14 +11,14 @@ loopring_exported_account = {
     "name" : "UAT Account 1",
     "chainId": 5,
     "exchangeName": "LoopringDEX: V2",
-    "exchangeAddress": "0x2e76EBd1c7c0C8e7c2B875b6d505a260C525d25e",
-    "accountAddress": "",
-    "accountId": 0,
-    "apiKey": "",
-    "publicKeyX": "",
-    "publicKeyY": "",
-    "privateKey": "",
-    "ecdsaKey"  : "",
+    "exchangeAddress": "0x12b7cccF30ba360e5041C6Ce239C9a188B709b2B",
+    "accountAddress": "0x727e0fa09389156fc803eaf9c7017338efd76e7f",
+    "accountId": 10037,
+    "apiKey": "JC1vbpMLprvoALsNFuhyCkVsTwZa2TSyMsP9fW1jLhR6yMbWcygnrcxcfHNnnRHk",
+    "publicKeyX": "0x1959921f5f8d4f486b4c57afd6459444be34c75eede50ff1bd00b0333887eb70",
+    "publicKeyY": "0x2bb25e133b1294626e1154e662b38d9332b66927451813c1615912fd705b7720",
+    "privateKey": "0x5db65ed466a3b154dcf83e2e4b06b66c0c305d7d2088f9f60031567cf080dc1",
+    "ecdsaKey"  : "491aecdb1d5f6400a6b62fd12a41a86715bbab675c37a4060ba115fecf94083c",
     "whitelisted": False
 }
 
