@@ -30,7 +30,7 @@ Set config got from [Loopring UAT Env](https://loopring-amm.herokuapp.com/), the
 ```
 There are 2 extra settings. ecdsaKey is for L1 account ownership authentication, directly moving L2 token operations like transfer & withdraw, need extra L1 signatures. However, if you are a professional user, you can register to Loopring's whitelist to skip this step, which makes transfers, especially payments, convenient & fast.
 
-### update passowrd
+### update password
 
 ```bash
     $python v3explorer/api_explorer.py -a update -k 0x4f047d81732cdb4b6ef00117a57cb9bff167c20bb17e1d375947db4aa561ee9
