@@ -122,9 +122,10 @@ class RestClient(object):
 
     def stop(self):
         """
-        Stop rest client immediately.
+        Stop rest client immediately and close pools.
         """
         self._active = False
+        self._pool.close()
 
     def join(self):
         """
